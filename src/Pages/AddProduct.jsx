@@ -34,7 +34,7 @@ const AddProduct = () => {
 
 
     try {
-      const response = await fetch("https://hardware-hive.vercel.app/api/admin/uploadProduct", {
+      const response = await fetch("https://hardware-hive-backend.vercel.app/api/admin/uploadProduct", {
         method: "POST",
         body: formData,
       });

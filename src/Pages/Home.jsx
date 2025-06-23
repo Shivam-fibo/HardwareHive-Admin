@@ -51,6 +51,14 @@ const Home = () => {
             >
               Show Order Placed
             </button>
+
+
+               <button 
+              onClick={() => navigate("/profile")} 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
+            >
+              Profile Requires
+            </button>
           </div>
           
           <div className="bg-gray-700 px-6 py-4">

@@ -8,7 +8,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://hardware-hive.vercel.app/api/admin/registrations");
+      const response = await fetch("https://hardware-hive-backend.vercel.app/api/admin/registrations");
       const data = await response.json();
       setUsers(data);
       applyFilter(data, filterStatus);
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
 
   const handleApprove = async (id, userEmail, userName) => {
     try {
-      const approveResponse = await fetch(`https://hardware-hive.vercel.app/api/admin/registrations/${id}/approve`, {
+      const approveResponse = await fetch(`https://hardware-hive-backend.vercel.app/api/admin/registrations/${id}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail, name: userName }),

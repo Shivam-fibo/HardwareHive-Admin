@@ -8,7 +8,7 @@ const QueryList = () => {
   useEffect(() => {
     const fetchQueries = async () => {
       try {
-        const res = await fetch("https://hardware-hive.vercel.app/api/admin/queries");
+        const res = await fetch("https://hardware-hive-backend.vercel.app/api/admin/queries");
         const data = await res.json();
         console.log(data);
         if (res.ok) {

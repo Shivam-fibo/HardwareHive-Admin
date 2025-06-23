@@ -9,7 +9,7 @@ const filteredOrders = orders.filter(order =>
 );
   
   const updateItemQuantity = (orderId, itemId, newQuantity) => {
-    fetch(`https://hardware-hive.vercel.app/api/admin/updateQuantity`, {
+    fetch(`https://hardware-hive-backend.vercel.app/api/admin/updateQuantity`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orderId, itemId, quantity: newQuantity }),
@@ -34,7 +34,7 @@ const filteredOrders = orders.filter(order =>
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          "https://hardware-hive.vercel.app/api/admin/getPlacedOrder"
+          "https://hardware-hive-backend.vercel.app/api/admin/getPlacedOrder"
         );
         const data = await res.json();
         console.log("user order data is", data);
@@ -49,7 +49,7 @@ const filteredOrders = orders.filter(order =>
   const confirmOrder = async (orderId) => {
     try {
       const res = await fetch(
-        `https://hardware-hive.vercel.app/api/admin/confirm/${orderId}`,
+        `https://hardware-hive-backend.vercel.app/api/admin/confirm/${orderId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -107,12 +107,12 @@ const filteredOrders = orders.filter(order =>
             <hr className="my-3" />
             <div className="mb-3">
               <h3 className="text-lg font-semibold">User Details</h3>
-              <p><strong>Name:</strong> {order.userId.name} ({order.userId.companyName})</p>
-              <p><strong>Email:</strong> {order.userId.email}</p>
-              <p><strong>Mobile:</strong> {order.userId.mobile}</p>
-              <p><strong>Whatsapp:</strong> {order.userId.whatsapp}</p>
-              <p><strong>Address:</strong> {order.userId.address}, {order.userId.city}, {order.userId.state} - {order.userId.pincode}</p>
-              <p><strong>GST:</strong> {order.userId.gstNumber}</p>
+              <p><strong>Name:</strong> {order.name} ({order.companyName})</p>
+              <p><strong>Email:</strong> {order.email}</p>
+              <p><strong>Mobile:</strong> {order.mobile}</p>
+              <p><strong>Whatsapp:</strong> {order.whatsapp}</p>
+              <p><strong>Address:</strong> {order.address}, {order.city}, {order.state} - {order.pincode}</p>
+              <p><strong>GST:</strong> {order.gstNumber}</p>
             </div>
 
             {/* Ordered Items */}
