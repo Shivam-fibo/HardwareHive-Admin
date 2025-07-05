@@ -14,12 +14,18 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
+  const [selectedBrandId, setSelectedBrandId] = useState("");
   const [isNewCategory, setIsNewCategory] = useState(false);
+  const [isNewSubCategory, setIsNewSubCategory] = useState(false);
+  const [isNewBrand, setIsNewBrand] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newSubCategoryName, setNewSubCategoryName] = useState("");
-  const [subCategoryImage, setSubCategoryImage] = useState(null);
+  const [newBrandName, setNewBrandName] = useState("");
+  const [newProductId, setNewProductId] = useState("");
+  const [brandImage, setBrandImage] = useState(null);
+  const [productBrand, setProductBrand] = useState("")
   const [availableSubCategories, setAvailableSubCategories] = useState([]);
-  const [addNewSubCategory, setAddNewSubCategory] = useState(false);
+  const [availableBrands, setAvailableBrands] = useState([]);
 
   // Fetch existing categories on component mount
   useEffect(() => {
@@ -32,9 +38,21 @@ const AddProduct = () => {
       const selectedCategory = categories.find(cat => cat._id === selectedCategoryId);
       setAvailableSubCategories(selectedCategory?.subcategories || []);
       setSelectedSubCategoryId("");
-      setAddNewSubCategory(false);
+      setSelectedBrandId("");
+      setAvailableBrands([]);
+      setIsNewSubCategory(false);
+      setIsNewBrand(false);
     }
   }, [selectedCategoryId, categories, isNewCategory]);
+
+  // Update brands when subcategory changes
+  useEffect(() => {
+    if (selectedSubCategoryId && !isNewSubCategory) {
+      fetchBrands(selectedSubCategoryId);
+      setSelectedBrandId("");
+      setIsNewBrand(false);
+    }
+  }, [selectedSubCategoryId, isNewSubCategory]);
 
   const fetchCategories = async () => {
     try {
@@ -46,30 +64,61 @@ const AddProduct = () => {
     }
   };
 
+  const fetchBrands = async (subCategoryId) => {
+    try {
+      const response = await fetch(`https://hardware-hive-backend.vercel.app/api/admin/brands/${subCategoryId}`);
+      const data = await response.json();
+      setAvailableBrands(data);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
+  };
+
   const handleCategoryChange = (value) => {
     if (value === "new") {
       setIsNewCategory(true);
       setSelectedCategoryId("");
       setSelectedSubCategoryId("");
+      setSelectedBrandId("");
       setAvailableSubCategories([]);
+      setAvailableBrands([]);
     } else {
       setIsNewCategory(false);
       setSelectedCategoryId(value);
       setNewCategoryName("");
       setNewSubCategoryName("");
-      setSubCategoryImage(null);
+      setNewBrandName("");
+      setNewProductId("");
+      setBrandImage(null);
     }
   };
 
   const handleSubCategoryChange = (value) => {
     if (value === "new") {
-      setAddNewSubCategory(true);
+      setIsNewSubCategory(true);
       setSelectedSubCategoryId("");
+      setSelectedBrandId("");
+      setAvailableBrands([]);
     } else {
-      setAddNewSubCategory(false);
+      setIsNewSubCategory(false);
       setSelectedSubCategoryId(value);
       setNewSubCategoryName("");
-      setSubCategoryImage(null);
+      setNewBrandName("");
+      setNewProductId("");
+      setBrandImage(null);
+    }
+  };
+
+  const handleBrandChange = (value) => {
+    if (value === "new") {
+      setIsNewBrand(true);
+      setSelectedBrandId("");
+    } else {
+      setIsNewBrand(false);
+      setSelectedBrandId(value);
+      setNewBrandName("");
+      setNewProductId("");
+      setBrandImage(null);
     }
   };
 
@@ -82,11 +131,16 @@ const AddProduct = () => {
     setImage(null);
     setSelectedCategoryId("");
     setSelectedSubCategoryId("");
+    setSelectedBrandId("");
     setIsNewCategory(false);
+    setIsNewSubCategory(false);
+    setIsNewBrand(false);
+    setProductBrand("")
     setNewCategoryName("");
     setNewSubCategoryName("");
-    setSubCategoryImage(null);
-    setAddNewSubCategory(false);
+    setNewBrandName("");
+    setNewProductId("");
+    setBrandImage(null);
   };
 
   const handleSubmit = async () => {
@@ -97,22 +151,36 @@ const AddProduct = () => {
     formData.append("title", title);
     formData.append("subheading", subheading);
     formData.append("productInfo", productInfo);
+    formData.append("productBrand", productBrand)
     formData.append("price", price);
     formData.append("buyingPrice", buyingPrice);
     formData.append("image", image);
     formData.append("isNewCategory", isNewCategory);
+    formData.append("isNewSubCategory", isNewSubCategory);
+    formData.append("isNewBrand", isNewBrand);
 
     if (isNewCategory) {
       formData.append("newCategoryName", newCategoryName);
       formData.append("newSubCategoryName", newSubCategoryName);
-      formData.append("subCategoryImage", subCategoryImage);
+      formData.append("newBrandName", newBrandName);
+      formData.append("newProductId", newProductId);
+      formData.append("brandImage", brandImage);
     } else {
       formData.append("categoryId", selectedCategoryId);
-      if (addNewSubCategory) {
+      if (isNewSubCategory) {
         formData.append("newSubCategoryName", newSubCategoryName);
-        formData.append("subCategoryImage", subCategoryImage);
+        formData.append("newBrandName", newBrandName);
+        formData.append("newProductId", newProductId);
+        formData.append("brandImage", brandImage);
       } else {
         formData.append("subCategoryId", selectedSubCategoryId);
+        if (isNewBrand) {
+          formData.append("newBrandName", newBrandName);
+          formData.append("newProductId", newProductId);
+          formData.append("brandImage", brandImage);
+        } else {
+          formData.append("brandId", selectedBrandId);
+        }
       }
     }
 
@@ -145,6 +213,13 @@ const AddProduct = () => {
     return null;
   };
 
+  const getSelectedBrand = () => {
+    if (selectedBrandId) {
+      return availableBrands.find(brand => brand._id === selectedBrandId);
+    }
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
@@ -162,10 +237,10 @@ const AddProduct = () => {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Category & SubCategory Section */}
+            {/* Category, SubCategory & Brand Section */}
             <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="text-xl font-semibold mb-4 text-gray-800">Category Selection</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-800">Category & Brand Selection</h3>
                 
                 {/* Category Selection */}
                 <div className="mb-6">
@@ -206,7 +281,7 @@ const AddProduct = () => {
                   <div className="mb-6">
                     <label className="block text-sm font-medium mb-2 text-gray-700">SubCategory</label>
                     <select
-                      value={addNewSubCategory ? "new" : selectedSubCategoryId}
+                      value={isNewSubCategory ? "new" : selectedSubCategoryId}
                       onChange={(e) => handleSubCategoryChange(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
@@ -223,7 +298,7 @@ const AddProduct = () => {
                 )}
 
                 {/* New SubCategory Name */}
-                {(isNewCategory || addNewSubCategory) && (
+                {(isNewCategory || isNewSubCategory) && (
                   <div className="mb-6">
                     <label className="block text-sm font-medium mb-2 text-gray-700">
                       {isNewCategory ? "SubCategory Name" : "New SubCategory Name"}
@@ -239,31 +314,85 @@ const AddProduct = () => {
                   </div>
                 )}
 
-                {/* SubCategory Image */}
-                {(isNewCategory || addNewSubCategory) && (
+                {/* Brand Selection */}
+                {!isNewCategory && !isNewSubCategory && selectedSubCategoryId && (
                   <div className="mb-6">
-                    <label className="block text-sm font-medium mb-2 text-gray-700">SubCategory Image</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Brand</label>
+                    <select
+                      value={isNewBrand ? "new" : selectedBrandId}
+                      onChange={(e) => handleBrandChange(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Select Brand</option>
+                      {availableBrands.map((brand) => (
+                        <option key={brand._id} value={brand._id}>
+                          {brand.name} - {brand.productId}
+                        </option>
+                      ))}
+                      <option value="new">+ Add New Brand</option>
+                    </select>
+                  </div>
+                )}
+
+                {/* New Brand Name and Product ID */}
+                {(isNewCategory || isNewSubCategory || isNewBrand) && (
+                  <>
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2 text-gray-700">Brand Name</label>
+                      <input
+                        type="text"
+                        placeholder="Enter brand name"
+                        value={newBrandName}
+                        onChange={(e) => setNewBrandName(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2 text-gray-700">Product ID</label>
+                      <input
+                        type="text"
+                        placeholder="Enter product ID"
+                        value={newProductId}
+                        onChange={(e) => setNewProductId(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Brand Image */}
+                {(isNewCategory || isNewSubCategory || isNewBrand) && (
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Brand Image</label>
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setSubCategoryImage(e.target.files[0])}
+                      onChange={(e) => setBrandImage(e.target.files[0])}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
                 )}
 
-                {/* Selected SubCategory Display */}
-                {getSelectedSubCategory() && (
+                
+
+                {/* Selected Brand Display */}
+                {getSelectedBrand() && (
                   <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg">
-                    <h4 className="font-medium mb-2 text-gray-800">Selected SubCategory:</h4>
+                    <h4 className="font-medium mb-2 text-gray-800">Selected Brand:</h4>
                     <div className="flex items-center space-x-3">
                       <img 
-                        src={getSelectedSubCategory().image} 
-                        alt={getSelectedSubCategory().name}
+                        src={getSelectedBrand().image} 
+                        alt={getSelectedBrand().name}
                         className="w-12 h-12 object-cover rounded-lg"
                       />
-                      <span className="text-gray-700">{getSelectedSubCategory().name}</span>
+                      <div>
+                        <span className="text-gray-700 font-medium">{getSelectedBrand().name}</span>
+                        <p className="text-sm text-gray-500">ID: {getSelectedBrand().productId}</p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -277,10 +406,10 @@ const AddProduct = () => {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Brand Name</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Product Title</label>
                     <input
                       type="text"
-                      placeholder="Enter brand name"
+                      placeholder="Enter product title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -289,10 +418,10 @@ const AddProduct = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Item Name</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Product Subheading</label>
                     <input
                       type="text"
-                      placeholder="Enter item name"
+                      placeholder="Enter product subheading"
                       value={subheading}
                       onChange={(e) => setSubheading(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -301,12 +430,23 @@ const AddProduct = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Model Number</label>
-                    <input
-                      type="text"
-                      placeholder="Enter model number"
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Model</label>
+                    <textarea
+                      placeholder="Enter model "
                       value={productInfo}
                       onChange={(e) => setProductInfo(e.target.value)}
+                      rows="1"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Model</label>
+                    <textarea
+                      placeholder="Enter Brand "
+                      value={productBrand}
+                      onChange={(e) => setProductBrand(e.target.value)}
+                      rows="1"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
