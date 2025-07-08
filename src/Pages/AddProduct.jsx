@@ -22,6 +22,8 @@ const AddProduct = () => {
   const [newSubCategoryName, setNewSubCategoryName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
   const [newProductId, setNewProductId] = useState("");
+  const [newModel, setNewModel] = useState('')
+  const [newSize, setNewSize] = useState('')
   const [brandImage, setBrandImage] = useState(null);
   const [productBrand, setProductBrand] = useState("")
   const [availableSubCategories, setAvailableSubCategories] = useState([]);
@@ -158,6 +160,8 @@ const AddProduct = () => {
     formData.append("isNewCategory", isNewCategory);
     formData.append("isNewSubCategory", isNewSubCategory);
     formData.append("isNewBrand", isNewBrand);
+    formData.append("model", newModel);
+    formData.append("size", newSize);
 
     if (isNewCategory) {
       formData.append("newCategoryName", newCategoryName);
@@ -225,13 +229,12 @@ const AddProduct = () => {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Upload Product</h2>
-          
+
           {message && (
-            <div className={`mb-6 p-4 rounded-lg text-center ${
-              message.includes('successfully') 
-                ? 'bg-green-100 text-green-800 border border-green-300' 
+            <div className={`mb-6 p-4 rounded-lg text-center ${message.includes('successfully')
+                ? 'bg-green-100 text-green-800 border border-green-300'
                 : 'bg-red-100 text-red-800 border border-red-300'
-            }`}>
+              }`}>
               {message}
             </div>
           )}
@@ -241,7 +244,7 @@ const AddProduct = () => {
             <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-lg">
                 <h3 className="text-xl font-semibold mb-4 text-gray-800">Category & Brand Selection</h3>
-                
+
                 {/* Category Selection */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium mb-2 text-gray-700">Category</label>
@@ -350,12 +353,36 @@ const AddProduct = () => {
                       />
                     </div>
                     <div className="mb-6">
-                      <label className="block text-sm font-medium mb-2 text-gray-700">Product ID</label>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">Product Name</label>
                       <input
                         type="text"
                         placeholder="Enter product ID"
                         value={newProductId}
                         onChange={(e) => setNewProductId(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2 text-gray-700">Model Number</label>
+                      <input
+                        type="text"
+                        placeholder="Enter Model Number"
+                        value={newModel}
+                        onChange={(e) => setNewModel(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2 text-gray-700">Size</label>
+                      <input
+                        type="text"
+                        placeholder="Enter Size"
+                        value={newSize}
+                        onChange={(e) => setNewSize(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
@@ -377,15 +404,15 @@ const AddProduct = () => {
                   </div>
                 )}
 
-                
+
 
                 {/* Selected Brand Display */}
                 {getSelectedBrand() && (
                   <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg">
                     <h4 className="font-medium mb-2 text-gray-800">Selected Brand:</h4>
                     <div className="flex items-center space-x-3">
-                      <img 
-                        src={getSelectedBrand().image} 
+                      <img
+                        src={getSelectedBrand().image}
                         alt={getSelectedBrand().name}
                         className="w-12 h-12 object-cover rounded-lg"
                       />
@@ -403,7 +430,7 @@ const AddProduct = () => {
             <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-lg">
                 <h3 className="text-xl font-semibold mb-4 text-gray-800">Product Information</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Product Title</label>
@@ -440,7 +467,7 @@ const AddProduct = () => {
                       required
                     />
                   </div>
-                   <div>
+                  <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Model</label>
                     <textarea
                       placeholder="Enter Brand "
