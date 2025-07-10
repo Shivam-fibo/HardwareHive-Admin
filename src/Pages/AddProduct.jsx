@@ -433,31 +433,32 @@ const AddProduct = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Product Title</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Item Name</label>
                     <input
                       type="text"
-                      placeholder="Enter product title"
+                      placeholder="Enter Item Name"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Product Subheading</label>
-                    <input
-                      type="text"
-                      placeholder="Enter product subheading"
-                      value={subheading}
-                      onChange={(e) => setSubheading(e.target.value)}
+                   <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Brand</label>
+                    <textarea
+                      placeholder="Enter Brand "
+                      value={productBrand}
+                      onChange={(e) => setProductBrand(e.target.value)}
+                      rows="1"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
 
+               
+
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Model</label>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Model Number</label>
                     <textarea
                       placeholder="Enter model "
                       value={productInfo}
@@ -467,13 +468,15 @@ const AddProduct = () => {
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Model</label>
-                    <textarea
-                      placeholder="Enter Brand "
-                      value={productBrand}
-                      onChange={(e) => setProductBrand(e.target.value)}
-                      rows="1"
+                 
+
+                     <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Size</label>
+                    <input
+                      type="text"
+                      placeholder="Enter Size"
+                      value={subheading}
+                      onChange={(e) => setSubheading(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
