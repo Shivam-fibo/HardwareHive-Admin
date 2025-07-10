@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 const AddProduct = () => {
+
   const [title, setTitle] = useState("");
   const [subheading, setSubheading] = useState("");
   const [productInfo, setProductInfo] = useState("");
@@ -9,8 +10,6 @@ const AddProduct = () => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  // Category management states
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("");
@@ -22,30 +21,81 @@ const AddProduct = () => {
   const [newSubCategoryName, setNewSubCategoryName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
   const [newProductId, setNewProductId] = useState("");
-  const [newModel, setNewModel] = useState('')
-  const [newSize, setNewSize] = useState('')
+  const [newModel, setNewModel] = useState('');
+  const [newSize, setNewSize] = useState('');
   const [brandImage, setBrandImage] = useState(null);
-  const [productBrand, setProductBrand] = useState("")
+  const [productBrand, setProductBrand] = useState("");
   const [availableSubCategories, setAvailableSubCategories] = useState([]);
   const [availableBrands, setAvailableBrands] = useState([]);
+  const [subCategoryError, setSubCategoryError] = useState("");
+  const [allCategories, setAllCategories] = useState([]);
+  const [allSubCategories, setAllSubCategories] = useState([]);
+  const [allBrands, setAllBrands] = useState([]);
+  const [allModels, setAllModels] = useState([]);
+  const [allSizes, setAllSizes] = useState([]);
+  const [isCustomModel, setIsCustomModel] = useState(false);
+  const [isCustomSize, setIsCustomSize] = useState(false);
+  const [productBrands, setProductBrands] = useState([]);
+  const [productModels, setProductModels] = useState([]);
+  const [productSizes, setProductSizes] = useState([]);
+  const [isCustomProductBrand, setIsCustomProductBrand] = useState(false);
+  const [isCustomProductModel, setIsCustomProductModel] = useState(false);
+  const [isCustomProductSize, setIsCustomProductSize] = useState(false);
+  const [productImagePreview, setProductImagePreview] = useState(null);
+  const [brandImagePreview, setBrandImagePreview] = useState(null);
 
-  // Fetch existing categories on component mount
+  // Fetch all data on component mount
   useEffect(() => {
-    fetchCategories();
+    const fetchAllData = async () => {
+      try {
+        // Fetch categories with subcategories (existing)
+        const categoriesRes = await fetch("https://hardware-hive-backend.vercel.app/api/admin/categories");
+        const categoriesData = await categoriesRes.json();
+        setCategories(categoriesData);
+
+        // Fetch all standalone data for dropdowns
+        const [allCategoriesRes, allSubCategoriesRes, allBrandsRes, modelsRes, sizesRes] = await Promise.all([
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/all-categories"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/all-subcategories"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/all-brands"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/all-models"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/all-sizes")
+        ]);
+
+        setAllCategories(await allCategoriesRes.json());
+        setAllSubCategories(await allSubCategoriesRes.json());
+        setAllBrands(await allBrandsRes.json());
+        setAllModels(await modelsRes.json());
+        setAllSizes(await sizesRes.json());
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchAllData();
   }, []);
 
   // Update subcategories when category changes
   useEffect(() => {
     if (selectedCategoryId && !isNewCategory) {
-      const selectedCategory = categories.find(cat => cat._id === selectedCategoryId);
-      setAvailableSubCategories(selectedCategory?.subcategories || []);
+      const fetchSubCategories = async () => {
+        try {
+          const response = await fetch(`https://hardware-hive-backend.vercel.app/api/admin/subcategories/${selectedCategoryId}`);
+          const data = await response.json();
+          setAvailableSubCategories(data);
+        } catch (error) {
+          console.error("Error fetching subcategories:", error);
+        }
+      };
+
+      fetchSubCategories();
       setSelectedSubCategoryId("");
       setSelectedBrandId("");
       setAvailableBrands([]);
       setIsNewSubCategory(false);
       setIsNewBrand(false);
     }
-  }, [selectedCategoryId, categories, isNewCategory]);
+  }, [selectedCategoryId, isNewCategory]);
 
   // Update brands when subcategory changes
   useEffect(() => {
@@ -56,16 +106,6 @@ const AddProduct = () => {
     }
   }, [selectedSubCategoryId, isNewSubCategory]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("https://hardware-hive-backend.vercel.app/api/admin/categories");
-      const data = await response.json();
-      setCategories(data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
   const fetchBrands = async (subCategoryId) => {
     try {
       const response = await fetch(`https://hardware-hive-backend.vercel.app/api/admin/brands/${subCategoryId}`);
@@ -74,6 +114,18 @@ const AddProduct = () => {
     } catch (error) {
       console.error("Error fetching brands:", error);
     }
+  };
+
+  // Existing helper functions
+  const checkSubCategoryExists = (name) => {
+    if (!selectedCategoryId) return false;
+
+    const selectedCategory = categories.find(cat => cat._id === selectedCategoryId);
+    if (!selectedCategory) return false;
+
+    return selectedCategory.subcategories.some(
+      subCat => subCat.name.toLowerCase() === name.toLowerCase()
+    );
   };
 
   const handleCategoryChange = (value) => {
@@ -97,6 +149,11 @@ const AddProduct = () => {
 
   const handleSubCategoryChange = (value) => {
     if (value === "new") {
+      if (newSubCategoryName && checkSubCategoryExists(newSubCategoryName)) {
+        setSubCategoryError("Subcategory already exists");
+      } else {
+        setSubCategoryError("");
+      }
       setIsNewSubCategory(true);
       setSelectedSubCategoryId("");
       setSelectedBrandId("");
@@ -108,6 +165,7 @@ const AddProduct = () => {
       setNewBrandName("");
       setNewProductId("");
       setBrandImage(null);
+      setSubCategoryError("");
     }
   };
 
@@ -121,6 +179,101 @@ const AddProduct = () => {
       setNewBrandName("");
       setNewProductId("");
       setBrandImage(null);
+    }
+  };
+
+  const handleModelChange = (value) => {
+    if (value === "other") {
+      setIsCustomModel(true);
+      setNewModel("");
+    } else {
+      setIsCustomModel(false);
+      setNewModel(value);
+    }
+  };
+
+  const handleSizeChange = (value) => {
+    if (value === "other") {
+      setIsCustomSize(true);
+      setNewSize("");
+    } else {
+      setIsCustomSize(false);
+      setNewSize(value);
+    }
+  };
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        const [brandsRes, modelsRes, sizesRes] = await Promise.all([
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/product-brands"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/product-models"),
+          fetch("https://hardware-hive-backend.vercel.app/api/admin/product-sizes")
+        ]);
+
+        setProductBrands(await brandsRes.json());
+        setProductModels(await modelsRes.json());
+        setProductSizes(await sizesRes.json());
+      } catch (error) {
+        console.error("Error fetching product data:", error);
+      }
+    };
+
+    fetchProductData();
+  }, []);
+
+  // Add these handler functions
+  const handleProductBrandChange = (value) => {
+    if (value === "other") {
+      setIsCustomProductBrand(true);
+      setProductBrand("");
+    } else {
+      setIsCustomProductBrand(false);
+      setProductBrand(value);
+    }
+  };
+
+  const handleProductModelChange = (value) => {
+    if (value === "other") {
+      setIsCustomProductModel(true);
+      setProductInfo("");
+    } else {
+      setIsCustomProductModel(false);
+      setProductInfo(value);
+    }
+  };
+
+  const handleProductSizeChange = (value) => {
+    if (value === "other") {
+      setIsCustomProductSize(true);
+      setSubheading("");
+    } else {
+      setIsCustomProductSize(false);
+      setSubheading(value);
+    }
+  };
+
+  const handleProductImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBrandImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBrandImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBrandImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -143,9 +296,17 @@ const AddProduct = () => {
     setNewBrandName("");
     setNewProductId("");
     setBrandImage(null);
+    setProductImagePreview(null);
+  setBrandImagePreview(null);
   };
 
   const handleSubmit = async () => {
+    if ((isNewCategory || isNewSubCategory) && checkSubCategoryExists(newSubCategoryName)) {
+      setSubCategoryError("Subcategory already exists");
+      setMessage("Please fix the errors before submitting");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setMessage("");
 
@@ -232,8 +393,8 @@ const AddProduct = () => {
 
           {message && (
             <div className={`mb-6 p-4 rounded-lg text-center ${message.includes('successfully')
-                ? 'bg-green-100 text-green-800 border border-green-300'
-                : 'bg-red-100 text-red-800 border border-red-300'
+              ? 'bg-green-100 text-green-800 border border-green-300'
+              : 'bg-red-100 text-red-800 border border-red-300'
               }`}>
               {message}
             </div>
@@ -255,7 +416,7 @@ const AddProduct = () => {
                     required
                   >
                     <option value="">Select Category</option>
-                    {categories.map((category) => (
+                    {allCategories.map((category) => (
                       <option key={category._id} value={category._id}>
                         {category.name}
                       </option>
@@ -310,10 +471,21 @@ const AddProduct = () => {
                       type="text"
                       placeholder="Enter subcategory name"
                       value={newSubCategoryName}
-                      onChange={(e) => setNewSubCategoryName(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      onChange={(e) => {
+                        setNewSubCategoryName(e.target.value);
+                        if (checkSubCategoryExists(e.target.value)) {
+                          setSubCategoryError("Subcategory already exists");
+                        } else {
+                          setSubCategoryError("");
+                        }
+                      }}
+                      className={`w-full p-3 border ${subCategoryError ? "border-red-500" : "border-gray-300"
+                        } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                       required
                     />
+                    {subCategoryError && (
+                      <p className="mt-1 text-sm text-red-600">{subCategoryError}</p>
+                    )}
                   </div>
                 )}
 
@@ -366,26 +538,58 @@ const AddProduct = () => {
 
                     <div className="mb-6">
                       <label className="block text-sm font-medium mb-2 text-gray-700">Model Number</label>
-                      <input
-                        type="text"
-                        placeholder="Enter Model Number"
-                        value={newModel}
-                        onChange={(e) => setNewModel(e.target.value)}
+                      <select
+                        value={isCustomModel ? "other" : newModel}
+                        onChange={(e) => handleModelChange(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         required
-                      />
+                      >
+                        <option value="">Select Model</option>
+                        {allModels.map((model, index) => (
+                          <option key={index} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                        <option value="other">Other</option>
+                      </select>
+                      {isCustomModel && (
+                        <input
+                          type="text"
+                          placeholder="Enter custom model"
+                          value={newModel}
+                          onChange={(e) => setNewModel(e.target.value)}
+                          className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                      )}
                     </div>
 
                     <div className="mb-6">
                       <label className="block text-sm font-medium mb-2 text-gray-700">Size</label>
-                      <input
-                        type="text"
-                        placeholder="Enter Size"
-                        value={newSize}
-                        onChange={(e) => setNewSize(e.target.value)}
+                      <select
+                        value={isCustomSize ? "other" : newSize}
+                        onChange={(e) => handleSizeChange(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         required
-                      />
+                      >
+                        <option value="">Select Size</option>
+                        {allSizes.map((size, index) => (
+                          <option key={index} value={size}>
+                            {size}
+                          </option>
+                        ))}
+                        <option value="other">Other</option>
+                      </select>
+                      {isCustomSize && (
+                        <input
+                          type="text"
+                          placeholder="Enter custom size"
+                          value={newSize}
+                          onChange={(e) => setNewSize(e.target.value)}
+                          className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                      )}
                     </div>
                   </>
                 )}
@@ -397,14 +601,22 @@ const AddProduct = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setBrandImage(e.target.files[0])}
+                      onChange={handleBrandImageChange}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
+                    {brandImagePreview && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                        <img
+                          src={brandImagePreview}
+                          alt="Brand Preview"
+                          className="h-40 object-contain border rounded-lg"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
-
-
 
                 {/* Selected Brand Display */}
                 {getSelectedBrand() && (
@@ -443,43 +655,89 @@ const AddProduct = () => {
                       required
                     />
                   </div>
-                   <div>
+
+                  <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Brand</label>
-                    <textarea
-                      placeholder="Enter Brand "
-                      value={productBrand}
-                      onChange={(e) => setProductBrand(e.target.value)}
-                      rows="1"
+                    <select
+                      value={isCustomProductBrand ? "other" : productBrand}
+                      onChange={(e) => handleProductBrandChange(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
-                    />
+                    >
+                      <option value="">Select Brand</option>
+                      {productBrands.map((brand, index) => (
+                        <option key={index} value={brand}>
+                          {brand}
+                        </option>
+                      ))}
+                      <option value="other">Other</option>
+                    </select>
+                    {isCustomProductBrand && (
+                      <input
+                        type="text"
+                        placeholder="Enter custom brand"
+                        value={productBrand}
+                        onChange={(e) => setProductBrand(e.target.value)}
+                        className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    )}
                   </div>
-
-               
 
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Model Number</label>
-                    <textarea
-                      placeholder="Enter model "
-                      value={productInfo}
-                      onChange={(e) => setProductInfo(e.target.value)}
-                      rows="1"
+                    <select
+                      value={isCustomProductModel ? "other" : productInfo}
+                      onChange={(e) => handleProductModelChange(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
-                    />
+                    >
+                      <option value="">Select Model</option>
+                      {productModels.map((model, index) => (
+                        <option key={index} value={model}>
+                          {model}
+                        </option>
+                      ))}
+                      <option value="other">Other</option>
+                    </select>
+                    {isCustomProductModel && (
+                      <input
+                        type="text"
+                        placeholder="Enter custom model"
+                        value={productInfo}
+                        onChange={(e) => setProductInfo(e.target.value)}
+                        className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    )}
                   </div>
-                 
 
-                     <div>
+                  <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Size</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Size"
-                      value={subheading}
-                      onChange={(e) => setSubheading(e.target.value)}
+                    <select
+                      value={isCustomProductSize ? "other" : subheading}
+                      onChange={(e) => handleProductSizeChange(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
-                    />
+                    >
+                      <option value="">Select Size</option>
+                      {productSizes.map((size, index) => (
+                        <option key={index} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                      <option value="other">Other</option>
+                    </select>
+                    {isCustomProductSize && (
+                      <input
+                        type="text"
+                        placeholder="Enter custom size"
+                        value={subheading}
+                        onChange={(e) => setSubheading(e.target.value)}
+                        className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -513,10 +771,20 @@ const AddProduct = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setImage(e.target.files[0])}
+                      onChange={handleProductImageChange}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
+                    {productImagePreview && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                        <img
+                          src={productImagePreview}
+                          alt="Product Preview"
+                          className="h-40 object-contain border rounded-lg"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
