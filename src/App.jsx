@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import OrdersPage from "./Pages/OderPage";
 import QueryList from "./Pages/GetAllQuery";
 import ProfileRequests from "./Pages/ProfileRequests";
+import CategorySelection from "./Pages/CategorySelection";
 const PrivateRoute = ({ element }) => {
   const { isAdminLoggedIn } = useAuth();
   return isAdminLoggedIn ? element : <Navigate to="/login" />;
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/getAllOrder" element={<PrivateRoute element={<OrdersPage/>} />}/>
           <Route path="/getAllQuery" element={<PrivateRoute element={<QueryList/>} />}/>
           <Route path = "/profile" element={<PrivateRoute element={<ProfileRequests/>}/>}/>
+          <Route path ="/category" element={<PrivateRoute element={<CategorySelection/>}/>}/>
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>

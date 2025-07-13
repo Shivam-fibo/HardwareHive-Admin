@@ -21,7 +21,7 @@ const Home = () => {
             </button>
             
             <button 
-              onClick={() => navigate("/addProduct")} 
+              onClick={() => navigate("/category")} 
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
             >
               Add Product
@@ -59,6 +59,14 @@ const Home = () => {
             >
               Profile Requires
             </button>
+
+               {/* <button 
+              onClick={() => navigate("/category")} 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
+            >
+              Category
+            </button> */}
+
           </div>
           
           <div className="bg-gray-700 px-6 py-4">
