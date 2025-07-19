@@ -31,7 +31,7 @@ const SparePartForm = () => {
   useEffect(() => {
     const fetchPastData = async () => {
       try {
-        const response = await fetch("https://hardware-hive-backend.vercel.app/api/category/spare-parts/past-data");
+        const response = await fetch("https://hardware-hive-backend.vercel.app/api/category/spare-part/past-data");
         const data = await response.json();
         if (response.ok) {
           setPastData(data);
