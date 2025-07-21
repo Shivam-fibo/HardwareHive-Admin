@@ -92,7 +92,7 @@ const SparePartForm = () => {
         setImagePreview(null);
 
         // Refresh dropdown options
-        const pastResponse = await fetch("https://hardware-hive-backend.vercel.app/api/category/spare-parts/past-data");
+        const pastResponse = await fetch("https://hardware-hive-backend.vercel.app/api/category/spare-part/past-data");
         const pastData = await pastResponse.json();
         if (pastResponse.ok) {
           setPastData(pastData);
