@@ -168,9 +168,9 @@ const SparePartForm = () => {
       <h2 className="text-xl font-bold text-center">Spare Part</h2>
 
       {renderDropdownWithAddOption("subcategory", "subcategory", pastData.subcategories)}
-      {renderDropdownWithAddOption("brand", "brand", pastData.brands)}
-      {renderDropdownWithAddOption("productName", "product name", pastData.productNames)}
-      {renderDropdownWithAddOption("modelName", "model name", pastData.modelNames)}
+      {renderDropdownWithAddOption("brand", "add machinery name", pastData.brands)}
+      {renderDropdownWithAddOption("productName", "product name ", pastData.productNames)}
+      {/* {renderDropdownWithAddOption("modelName", "model name", pastData.modelNames)} */}
       {renderDropdownWithAddOption("size", "size", pastData.sizes)}
 
       <input type="file" onChange={handleImageChange} className="border p-2" required />
