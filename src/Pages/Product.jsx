@@ -5,6 +5,7 @@ const Product = () => {
     title: "",
     buyingPrice: "",
     sellingPrice: "",
+    machineName: "",
     brand: "",
     modelName: "",
     size: "",
@@ -16,6 +17,7 @@ const Product = () => {
     buyingPrice:[],
     sellingPrice:[],
     brands: [],
+    machineName:[],
     modelNames: [],
     sizes: [],
   });
@@ -24,6 +26,7 @@ const Product = () => {
     buyingPrice: false,
     sellingPrice: false,
     brand: false,
+    machineName: false,
     modelName: false,
     size: false,
   });
@@ -76,6 +79,7 @@ const Product = () => {
     data.append("sellingPrice", formData.sellingPrice);
     data.append("brand", formData.brand);
     data.append("modelName", formData.modelName);
+    data.append("machineName", formData.machineName);
     data.append("size", formData.size);
     if (imageFile) {
       data.append("image", imageFile);
@@ -97,6 +101,7 @@ const Product = () => {
           brand: "",
           modelName: "",
           size: "",
+          machineName: "",
         });
         setImageFile(null);
         setImagePreview(null);
@@ -175,48 +180,58 @@ const Product = () => {
 
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col max-w-lg justify-center ml-50">
-      <h2 className="text-xl font-bold text-center">product</h2>
-      
-      {renderDropdownWithAddOption("title", "title", pastData.title)}
-      {renderDropdownWithAddOption("sellingPrice", "sellingPrice", pastData.sellingPrice)}
-      {renderDropdownWithAddOption("buyingPrice", "buyingPrice", pastData.buyingPrice)}
-      
-      {renderDropdownWithAddOption("brand", "brand", pastData.brands)}
-      
-      
-      {renderDropdownWithAddOption("modelName", "model name", pastData.modelNames)}
-      
-      {renderDropdownWithAddOption("size", "size", pastData.sizes)}
-      
-      <input type="file" onChange={handleImageChange} className="border p-2" required />
-     {imagePreview && (
-  <div className="relative border rounded-lg p-3 bg-gray-100 w-fit">
-    <div className="flex items-center justify-between mb-2">
-      <p className="text-sm font-semibold text-gray-700">Preview</p>
-      <button
-        type="button"
-        onClick={() => {
-          setImageFile(null);
-          setImagePreview(null);
-        }}
-        className="text-red-500 hover:text-red-700 font-bold text-sm"
-      >
-        ✕
-      </button>
-    </div>
-    <img
-      src={imagePreview}
-      alt="preview"
-      className="w-32 h-auto rounded shadow-md border"
+    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-md space-y-4">
+  <h2 className="text-2xl font-semibold text-center text-gray-800">Upload Product</h2>
+
+  {renderDropdownWithAddOption("title", "Product Title", pastData.title)}
+  {renderDropdownWithAddOption("sellingPrice", "Selling Price", pastData.sellingPrice)}
+  {renderDropdownWithAddOption("buyingPrice", "Buying Price", pastData.buyingPrice)}
+  {renderDropdownWithAddOption("brand", "Brand", pastData.brands)}
+  {renderDropdownWithAddOption("machineName", "Machine Name", pastData.machineName)}
+  {renderDropdownWithAddOption("modelName", "Model Name", pastData.modelNames)}
+  {renderDropdownWithAddOption("size", "Size", pastData.sizes)}
+
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">Upload Image</label>
+    <input
+      type="file"
+      onChange={handleImageChange}
+      className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:ring focus:ring-blue-200"
+      required
     />
   </div>
-)}
 
-      <button type="submit" className="bg-black text-white py-2 my-4">
-        Upload
-      </button>
-    </form>
+  {imagePreview && (
+    <div className="relative border rounded-md p-3 bg-gray-50">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-medium text-gray-600">Preview</p>
+        <button
+          type="button"
+          onClick={() => {
+            setImageFile(null);
+            setImagePreview(null);
+          }}
+          className="text-red-500 hover:text-red-700 text-sm font-bold"
+        >
+          ✕
+        </button>
+      </div>
+      <img
+        src={imagePreview}
+        alt="Preview"
+        className="w-32 h-auto rounded border shadow"
+      />
+    </div>
+  )}
+
+  <button
+    type="submit"
+    className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900 transition"
+  >
+    Upload
+  </button>
+</form>
+
   );
 };
 
