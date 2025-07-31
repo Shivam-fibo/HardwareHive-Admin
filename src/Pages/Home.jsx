@@ -24,8 +24,17 @@ const Home = () => {
               onClick={() => navigate("/category")} 
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
             >
-              Add Product
+              Add Category
             </button>
+
+              <button 
+              onClick={() => navigate("/uploadProduct")} 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
+            >
+              Add Product
+            </button> 
+
+
             <button 
               onClick={() => navigate("/editProduct")} 
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center font-medium"
