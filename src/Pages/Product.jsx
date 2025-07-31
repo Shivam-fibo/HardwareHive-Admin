@@ -11,7 +11,6 @@ const ProductForm = () => {
     size: "",
     machineName: "",
     description: "",
-    quantity: "",
   });
 
   // Category selection and matching for each category
@@ -273,7 +272,7 @@ const ProductForm = () => {
           size: "",
           machineName: "",
           description: "",
-          quantity: "",
+      
         });
         setMachineryData({
           enabled: false,
@@ -433,17 +432,7 @@ const ProductForm = () => {
           />
         </div>
 
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
-          <input
-            type="number"
-            name="quantity"
-            value={productInfo.quantity}
-            onChange={handleProductInfoChange}
-            className="border p-2 w-full rounded focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+      
 
         <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
