@@ -13,6 +13,7 @@ import QueryList from "./Pages/GetAllQuery";
 import ProfileRequests from "./Pages/ProfileRequests";
 import CategorySelection from "./Pages/CategorySelection";
 import Product from "./Pages/Product";
+import CategoryList from "./Pages/Category/CategoryList";
 const PrivateRoute = ({ element }) => {
   const { isAdminLoggedIn } = useAuth();
   return isAdminLoggedIn ? element : <Navigate to="/login" />;
@@ -34,6 +35,7 @@ const App = () => {
           <Route path = "/profile" element={<PrivateRoute element={<ProfileRequests/>}/>}/>
           <Route path ="/category" element={<PrivateRoute element={<CategorySelection/>}/>}/>
           <Route path ="/uploadProduct" element={<PrivateRoute element={<Product/>}/>}/>
+          <Route path ="/categoryList" element={<PrivateRoute element={<CategoryList/>}/>}/>
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
