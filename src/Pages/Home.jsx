@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "./Navbar";
 const Home = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+    <div className="">
+      <Navbar/>
+      <hr className="h-1 bg-[#013E70]" />
       <div className="w-full max-w-md">
-        <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-700">
-            <h1 className="text-2xl font-bold text-white text-center">Dashboard</h1>
+        <div className=" rounded-xl shadow-lg overflow-hidden">
+          <div className="p-6">
+         
           </div>
           
           <div className="p-6 space-y-4">
@@ -78,9 +80,7 @@ const Home = () => {
 
           </div>
           
-          <div className="bg-gray-700 px-6 py-4">
-            <p className="text-gray-400 text-center text-sm">Product Management System</p>
-          </div>
+         
         </div>
       </div>
     </div>
