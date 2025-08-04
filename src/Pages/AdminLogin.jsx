@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -23,11 +24,11 @@ const AdminLogin = () => {
       });
 
       const result = await response.json();
-      
+
       if (response.ok) {
         toast.success(result.message);
-        login(); // Set admin login state
-        navigate("/home"); // Redirect to home page
+        login();
+        navigate("/home");
       } else {
         toast.error(result.message);
       }
@@ -41,9 +42,36 @@ const AdminLogin = () => {
       <div className="bg-white p-6 rounded-lg shadow-md w-80">
         <h2 className="text-xl font-bold mb-4 text-center">Admin Login</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input type="email" name="email" placeholder="Email" className="w-full p-2 border rounded" onChange={handleInputChange} required />
-          <input type="password" name="password" placeholder="Password" className="w-full p-2 border rounded" onChange={handleInputChange} required />
-          <button type="submit" className="bg-blue-500 text-white w-full p-2 rounded">Login</button>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="w-full p-2 border rounded"
+            onChange={handleInputChange}
+            required
+          />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              className="w-full p-2 border rounded pr-16"
+              onChange={handleInputChange}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-blue-600"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <button type="submit" className="bg-blue-500 text-white w-full p-2 rounded">
+            Login
+          </button>
         </form>
       </div>
     </div>

@@ -45,12 +45,6 @@ const Home = () => {
     Query
   </button>
 
-  <button
-    onClick={() => navigate("/addShowAllProduct")}
-    className="w-48 bg-pink-600 hover:bg-pink-700 text-white py-3 px-4 rounded-lg transition duration-300 transform hover:scale-110 flex items-center justify-center font-medium cursor-pointer"
-  >
-    Show All Products
-  </button>
 
   <button
     onClick={() => navigate("/getAllOrder")}
